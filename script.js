@@ -1,85 +1,46 @@
-const canvas = document.querySelector('canvas')
-const c = canvas.getContext('2d')
+const canvas = document.querySelector('canvas');
+const c = canvas.getContext('2d');
 
-canvas.width = 1024
-canvas.height = 576
+window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
 
-c.fillRect(0 , 0, canvas.width, canvas.height)
+c.fillRect(0, 0, canvas.width, canvas.height);
 
+const gravity = 0.2;
 
-const gravity = 0.2
-class Sprite {
-    constructor({position , velocity, color = "red"}) {
-        this.position = position
-        this.velocity = velocity
-        this.width = 90
-        this.height = 150
-        this.attackBox = {
-            position: this.position ,
-            width: 150,
-            height: 30
-        }
-        this.color = color
-        this.isAttacking
-    }
-    draw() {
-        c.fillStyle = this.color
-        c.fillRect(this.position.x, this.position.y, this.width , this.height)
-
-        if (this.isAttacking) {
-        c.fillStyle = "green"
-        c.fillRect(
-            this.attackBox.position.x, 
-            this.attackBox.position.y, 
-            this.attackBox.width, 
-            this.attackBox.height
-        )
-        }
-    }
-
-    update() {
-        this.draw()
-        this.position.x += this.velocity.x
-        this.position.y += this.velocity.y
-
-        if (this.position.y + this.height + this.velocity.y >= canvas.height) {
-            this.velocity.y = 0
-        } else {
-            this.velocity.y += gravity
-        }
-    }
-
-    attack() {
-        this.isAttacking = true
-        setTimeout(() => {
-            this.isAttacking = false
-        }, 100)
-    }
-}
-
-
-const player = new Sprite({
+const background = new Sprite({
     position: {
-    x:0,
-    y:0
+        x: 0,
+        y: 0
+    },
+    imageSrc: './images/level 1/planet.png'
+});
+
+const player = new Fighter({
+    position: {
+        x: 0,
+        y: 0
     },
     velocity: {
         x: 0,
-        y: 10
-    },
-})
+        y: 30
+    }
+});
 
-const enemy = new Sprite({
+const enemy = new Fighter({
     position: {
-    x:400,
-    y:100
+        x: 400,
+        y: 100
     },
     velocity: {
         x: 0,
         y: 10
     },
     color: "blue"
-})
+});
+
 
 
 enemy.draw()
@@ -100,18 +61,23 @@ let lastKey
 
 function animate() {
     window.requestAnimationFrame(animate)
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    c.drawImage(background.image, background.position.x, background.position.y, canvas.width, canvas.height);
     c.fillStyle = "black"
     c.fillRect(0 , 0, canvas.width, canvas.height)
+    background.update()
     player.update()
     enemy.update()
 
 
     player.velocity.x = 0
     if (keys.a.pressed && lastKey === 'a') {
-        player.velocity.x = -3
+        player.velocity.x = -6
     } else if (keys.d.pressed && lastKey === 'd' )  {
-        player.velocity.x = 3
+        player.velocity.x = 6
     }
+    
 
     if (player.attackBox.position.x + player.attackBox.width >= 
         enemy.position.x && player.attackBox.position.x <= 
@@ -123,6 +89,7 @@ function animate() {
         player.isAttacking = false
         console.log("hit")
     } 
+
 }
 
 animate()
@@ -130,24 +97,27 @@ animate()
 window.addEventListener('keydown', (event) => {
     switch (event.key) {
         case 'd':
-            keys.d.pressed = true
-            lastKey = 'd'
-            break
+          keys.d.pressed = true;
+          lastKey = event.key;
+          break;
+      
         case 'a':
-            keys.a.pressed = true
-            lastKey = 'a'
-            break
+          keys.a.pressed = true;
+          lastKey = event.key;
+          break;
+      
         case 'w':
-            player.velocity.y = -10
-            break
-        case ' ':
-            player.attack()
-            break
-
-    }
-
-    console.log(event)
-})
+          player.velocity.y = -10;
+          break;
+      
+        case 'k':
+          player.attack();
+          break;
+        case 'l':
+          player.shoot();
+          break;
+      }
+  });
 
 window.addEventListener('keyup', (event) => {
     switch (event.key) {
@@ -160,6 +130,12 @@ window.addEventListener('keyup', (event) => {
         case 'w':
             keys.w.pressed = false
             break        
+        case 'k':
+            player.attack();
+            break;
+        case 'l':
+            player.stopShooting();
+            break;
     }
     console.log(event)
 })
