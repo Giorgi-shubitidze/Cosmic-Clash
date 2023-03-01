@@ -9,7 +9,7 @@ class Sprite {
     draw() {
         c.drawImage(this.image, this.position.x, this.position.y, canvas.width, canvas.height);
     }
-
+ 
     update() {
         this.draw();
     }
@@ -53,6 +53,7 @@ class Fighter {
         this.color = color;
         this.isAttacking = false;
         this.bullets = [];
+        this.canJump = true;
     }
 
     draw() {
@@ -97,7 +98,6 @@ class Fighter {
     update() {
         this.draw();
 
-    // Check the boundaries of the canvas
     if (this.position.x < 0) {
         this.position.x = 0;
     } else if (this.position.x + this.width > canvas.width) {
@@ -123,25 +123,16 @@ class Fighter {
 
     this.bullets.forEach(bullet => bullet.update());
     this.bullets = this.bullets.filter(bullet => bullet.position.y > 0);
-        // this.draw();
-        // this.position.x += this.velocity.x;
-        // this.position.y += this.velocity.y;
-
-        // if (this.position.y + this.height + this.velocity.y >= canvas.height - 270) {
-        //     this.velocity.y = 0;
-        //     this.canJump = true;
-        // } else {
-        //     this.velocity.y += gravity;
-        // }
-
-        // this.attackBox.position.x = this.position.x;
-        // this.attackBox.position.y = this.position.y + this.height;
-
-        // this.bullets.forEach(bullet => bullet.update());
-        // this.bullets = this.bullets.filter(bullet => bullet.position.y > 0);
     }
 
     attack() {
         this.isAttacking = true;
     }    
+
+    jump() {
+        if (this.canJump) {
+          this.velocity.y = -10;
+          this.canJump = false;
+        }
+    }
 }

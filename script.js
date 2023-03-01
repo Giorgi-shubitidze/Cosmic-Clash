@@ -9,7 +9,7 @@ window.addEventListener('resize', () => {
 c.fillRect(0, 0, canvas.width, canvas.height);
 
 const gravity = 0.2;
-
+ 
 const background = new Sprite({
     position: {
         x: 0,
@@ -107,7 +107,8 @@ window.addEventListener('keydown', (event) => {
           break;
       
         case 'w':
-          player.velocity.y = -10;
+          player.jump();
+          //player.velocity.y = -10;
           break;
       
         case 'k':
@@ -127,9 +128,9 @@ window.addEventListener('keyup', (event) => {
         case 'a':
             keys.a.pressed = false
             break
-        case 'w':
-            keys.w.pressed = false
-            break        
+        // case 'w':
+        //     keys.w.pressed = false
+        //     break        
         case 'k':
             player.attack();
             break;
